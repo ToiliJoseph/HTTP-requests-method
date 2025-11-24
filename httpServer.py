@@ -6,10 +6,18 @@ from urllib.parse import urlparse, parse_qs
 HOST = "127.0.0.1"
 PORT = 5000
 
-class WeatherRequestHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
+class WeatherRequestHandler(BaseHTTPRequestHandler):    
+    def do_GET(self):       
         parsed_path = urlparse(self.path)
+        print("Path received:",parsed_path.path)
         if parsed_path.path == "/":
+            self.send_response(200)
+            print("Serving homepage....")
+            self.send_header("Content-Type", "text/html")
+            self.end_headers()
+            with open("index.html", "rb") as f:
+                self.wfile.write(f.read())
+        elif parsed_path.path == "/":
             self.send_response(200)
             self.send_header("Content-Type", "text/html")
             self.end_headers()
@@ -45,6 +53,7 @@ class WeatherRequestHandler(BaseHTTPRequestHandler):
             self.send_header("Content-Type", "application/json")
             self.end_headers()
             self.wfile.write(json.dumps({"weather": weather}, ensure_ascii=False).encode())
+       
         else:
             self.send_response(404)
             self.end_headers()
